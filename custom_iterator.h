@@ -17,91 +17,97 @@
 
 namespace CS2312 {
 
-    template <typename T>
-    class fixed_array {
+	template <typename T>
+	class fixed_array {
 
-    public:
+	public:
 
-        typedef std::size_t size_type;
+		typedef std::size_t size_type;
 
-        class iterator {
+		class iterator {
 
-        public:
+		public:
 
-            typedef iterator self_type;
-            typedef T value_type;
-            typedef T& reference;
-            typedef T* pointer;
-            typedef std::forward_iterator_tag iterator_category;
-            typedef size_type difference_type;
+			typedef iterator self_type;
+			typedef T value_type;
+			typedef T& reference;
+			typedef T* pointer;
+			typedef std::forward_iterator_tag iterator_category;
+			typedef size_type difference_type;
 
-            iterator(pointer ptr);
-            self_type operator++();
-            self_type operator++(int junk);
-            reference operator*();
-            pointer operator->();
-            bool operator==(const self_type& rhs) const;
-            bool operator!=(const self_type& rhs) const;
+			iterator(pointer ptr) {__ptr = ptr;};
+			self_type operator++() { __ptr++; return *this; };
+			self_type operator++(int junk) { self_type temp = *this; __ptr++; return temp; };
+			reference operator*() { return *__ptr; };
+			pointer operator->() { return __ptr; };
+			bool operator==(const self_type& rhs) const { if (__ptr == rhs.__ptr)return true; return false; };
+			bool operator!=(const self_type& rhs) const { if (__ptr != rhs.__ptr)return true; return false; };
 
-        private:
+		private:
 
-            pointer __ptr;
+			pointer __ptr;
 
-        };
+		};
 
-        class const_iterator {
+		class const_iterator {
 
-        public:
+		public:
 
-            typedef const_iterator self_type;
-            typedef T value_type;
-            typedef T& reference;
-            typedef T* pointer;
-            typedef std::forward_iterator_tag iterator_category;
-            typedef size_type difference_type;
+			typedef const_iterator self_type;
+			typedef T value_type;
+			typedef T& reference;
+			typedef T* pointer;
+			typedef std::forward_iterator_tag iterator_category;
+			typedef size_type difference_type;
 
-            const_iterator(pointer ptr);
-            self_type operator++();
-            self_type operator++(int junk);
-            const value_type& operator*() const;
-            const value_type* operator->() const;
-            bool operator==(const self_type& rhs) const;
-            bool operator!=(const self_type& rhs) const;
+			const_iterator(pointer ptr) { __ptr = ptr; };
+			self_type operator++() { __ptr++; return *this; };
+			self_type operator++(int junk) { self_type temp = *this; __ptr++; return temp; };
+			const value_type& operator*() const { return *__ptr; };
+			const value_type* operator->() const { return __ptr; };
+			bool operator==(const self_type& rhs) const { if (__ptr == rhs.__ptr)return true; return false; };
+			bool operator!=(const self_type& rhs) const { if (__ptr != rhs.__ptr)return true; return false; };
 
-        private:
+		private:
 
-            pointer __ptr;
+			pointer __ptr;
 
-        };
+		};
 
 
-        fixed_array(size_type size);
+		fixed_array(size_type size) { __size = size; __data = new T[__size]; };
 
-        fixed_array(std::initializer_list<T> list);
+		fixed_array(std::initializer_list<T> list) 
+		{ 
+			std::vector<T> temp(list);
+			__size = temp.size();
+			__data = new T[__size];
+			for (int index = 0; index < temp.size(); index++)
+				__data[index] = temp[index]; 
+		};
 
-        ~fixed_array();
+		~fixed_array() { delete [] __data; };
 
-        size_type size() const;
+		size_type size() const { return __size; };
 
-        T& operator[](size_type index);
+		T& operator[](size_type index) { return __data[index]; };
 
-        const T& operator[](size_type index) const;
+		const T& operator[](size_type index) const { return __data[index]; };
 
-        iterator begin();
+		iterator begin() { return iterator(__data); };
 
-        iterator end();
+		iterator end() { return iterator(__data + __size); };
 
-        const_iterator begin() const;
+		const_iterator begin() const { return const_iterator(__data); };
 
-        const_iterator end() const;
+		const_iterator end() const { return const_iterator(__data + __size); };
 
-    private:
+	private:
 
-        T* __data;
-        size_type __size;
+		T* __data;
+		size_type __size;
 
-    };
-
+	};
 }
 
 #endif //UCD_CSCI2312_PA5_IMPL_CUSTOM_ITERATOR_H
